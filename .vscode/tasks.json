@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "🚀 Git 一键上传",
+      "label": "🚀 Git Auto Push",
       "type": "shell",
       "command": "${workspaceFolder}\\git_push.bat",
       "options": {
