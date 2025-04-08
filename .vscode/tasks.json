@@ -1,0 +1,20 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🚀 Git 一键上传",
+      "type": "shell",
+      "command": "${workspaceFolder}\\git_push.bat",
+      "options": {
+        "shell": {
+          "executable": "C:\\Windows\\System32\\cmd.exe"
+        }
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
