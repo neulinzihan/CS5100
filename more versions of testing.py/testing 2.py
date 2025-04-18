@@ -92,6 +92,65 @@ class DronePathfinder:
 
         return env
 
+    def generate_drone_placements(self):
+        """Generate enough drone positions to cover the entire grid."""
+        positions = []
+        sizes = []
+        coverage = np.zeros((self.grid_size, self.grid_size), dtype=bool)
+
+        # Keep adding drones until full coverage
+        while not np.all(coverage):
+            # Prefer 5x5 drones for more efficient coverage
+            size = random.choice([5, 5, 3])  # 2/3 chance of 5x5 drone
+
+            # Find the position that maximizes new coverage
+            best_position = None
+            best_new_coverage = 0
+
+            # Try 100 random positions to find a good one
+            for _ in range(100):
+                x = random.randint(0, self.grid_size - 1)
+                y = random.randint(0, self.grid_size - 1)
+
+                # Calculate how many new cells this drone would cover
+                half_size = (size - 1) // 2
+                new_coverage = 0
+
+                for dx in range(-half_size, half_size + 1):
+                    for dy in range(-half_size, half_size + 1):
+                        nx, ny = x + dx, y + dy
+                        if (0 <= nx < self.grid_size and
+                                0 <= ny < self.grid_size and
+                                not coverage[nx, ny]):
+                            new_coverage += 1
+
+                if new_coverage > best_new_coverage:
+                    best_new_coverage = new_coverage
+                    best_position = (x, y)
+
+                # If we found a position covering many new cells, stop early
+                if best_new_coverage >= min(size * size // 2, 10):
+                    break
+
+            if best_position and best_new_coverage > 0:
+                x, y = best_position
+                positions.append((x, y))
+                sizes.append(size)
+
+                # Update the coverage map
+                half_size = (size - 1) // 2
+                for dx in range(-half_size, half_size + 1):
+                    for dy in range(-half_size, half_size + 1):
+                        nx, ny = x + dx, y + dy
+                        if 0 <= nx < self.grid_size and 0 <= ny < self.grid_size:
+                            coverage[nx, ny] = True
+            else:
+                # If we couldn't find a good position, just use a random one
+                positions.append((random.randint(0, self.grid_size - 1),
+                                  random.randint(0, self.grid_size - 1)))
+                sizes.append(5)  # Use larger drone for better coverage
+
+        return positions, sizes
 
     def drone_scan(self, position, size):
         """Simulate a drone scan at the given position with the given size."""
